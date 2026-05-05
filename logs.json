@@ -1,0 +1,23 @@
+[
+  { "timestamp": "2026-05-04T08:00:01Z", "level": "INFO",    "service": "api",      "message": "Server started",              "durationMs": null },
+  { "timestamp": "2026-05-04T08:01:12Z", "level": "INFO",    "service": "auth",     "message": "User login successful",       "durationMs": 142  },
+  { "timestamp": "2026-05-04T08:01:45Z", "level": "INFO",    "service": "payments", "message": "Payment processed",           "durationMs": 380  },
+  { "timestamp": "2026-05-04T08:02:10Z", "level": "ERROR",   "service": "payments", "message": "Payment gateway timeout",     "durationMs": 5001 },
+  { "timestamp": "2026-05-04T08:02:33Z", "level": "INFO",    "service": "auth",     "message": "User login successful",       "durationMs": 138  },
+  { "timestamp": "2026-05-04T08:03:05Z", "level": "WARN",    "service": "database", "message": "Slow query detected",         "durationMs": 892  },
+  { "timestamp": "2026-05-04T08:03:44Z", "level": "ERROR",   "service": "payments", "message": "Payment gateway timeout",     "durationMs": 5003 },
+  { "timestamp": "2026-05-04T08:04:01Z", "level": "INFO",    "service": "api",      "message": "Health check passed",         "durationMs": 5    },
+  { "timestamp": "2026-05-04T08:04:22Z", "level": "ERROR",   "service": "auth",     "message": "Invalid token",               "durationMs": 44   },
+  { "timestamp": "2026-05-04T08:05:11Z", "level": "INFO",    "service": "payments", "message": "Payment processed",           "durationMs": 402  },
+  { "timestamp": "2026-05-04T08:05:33Z", "level": "WARN",    "service": "api",      "message": "Rate limit approaching",      "durationMs": null },
+  { "timestamp": "2026-05-04T08:06:00Z", "level": "INVALID", "service": "database", "message": "Something happened",          "durationMs": null },
+  { "timestamp": "2026-05-04T08:06:18Z", "level": "ERROR",   "service": "database", "message": "Connection pool exhausted",   "durationMs": null },
+  { "timestamp": "2026-05-04T08:06:45Z", "level": "INFO",    "service": "auth",     "message": "User login successful",       "durationMs": 155  },
+  { "timestamp": "2026-05-04T08:07:03Z", "level": "ERROR",   "service": "payments", "message": "Payment gateway timeout",     "durationMs": 5000 },
+  { "timestamp": "2026-05-04T08:07:21Z", "level": "INFO",    "service": "api",      "message": "Request processed",           "durationMs": 78   },
+  { "timestamp": "2026-05-04T08:07:55Z", "level": "WARN",    "service": "database", "message": "Slow query detected",         "durationMs": 756  },
+  { "timestamp": "2026-05-04T08:08:12Z", "level": "ERROR",   "service": "auth",     "message": "Invalid token",               "durationMs": 51   },
+  { "timestamp": "2026-05-04T08:08:44Z", "level": "INFO",    "service": "payments", "message": "Refund processed",            "durationMs": 290  },
+  { "timestamp": "2026-05-04T08:09:01Z", "level": "ERROR",   "service": "database", "message": "Connection pool exhausted",   "durationMs": null },
+  { "timestamp": "not-a-timestamp",      "level": "INFO",    "service": "api",      "message": "Garbage entry",               "durationMs": 100  }
+]
