@@ -1,0 +1,13 @@
+{
+  "server": {
+    "port": 8080,
+    "host": "staging.internal"
+  },
+  "database": {
+    "url": "postgres://staging-db:5432/myapp",
+    "poolSize": 20
+  },
+  "logging": {
+    "level": "info"
+  }
+}

@@ -1,0 +1,17 @@
+[
+  { "id": "1",  "title": "Set up CI pipeline",        "status": "done",        "priority": "high",   "assignee": "Alice", "dueDate": "2026-04-10", "tags": ["devops", "infra"] },
+  { "id": "2",  "title": "Write unit tests for auth",  "status": "in-progress", "priority": "high",   "assignee": "Bob",   "dueDate": "2026-05-01", "tags": ["testing", "auth"] },
+  { "id": "3",  "title": "Design database schema",     "status": "done",        "priority": "high",   "assignee": "Alice", "dueDate": "2026-04-15", "tags": ["database"] },
+  { "id": "4",  "title": "Fix login bug",              "status": "done",        "priority": "medium", "assignee": "Bob",   "dueDate": "2026-04-20", "tags": ["bug", "auth"] },
+  { "id": "5",  "title": "Update API documentation",   "status": "todo",        "priority": "low",    "assignee": "Carol", "dueDate": "2026-05-15", "tags": ["docs"] },
+  { "id": "6",  "title": "Implement payment flow",     "status": "in-progress", "priority": "high",   "assignee": "Alice", "dueDate": "2026-04-30", "tags": ["payments"] },
+  { "id": "7",  "title": "Code review session",        "status": "done",        "priority": "medium", "assignee": "Carol", "dueDate": "2026-04-25", "tags": ["review"] },
+  { "id": "8",  "title": "Optimize database queries",  "status": "todo",        "priority": "medium", "assignee": "Bob",   "dueDate": "2026-04-28", "tags": ["database", "performance"] },
+  { "id": "9",  "title": "Deploy to staging",          "status": "todo",        "priority": "high",   "assignee": "Carol", "dueDate": "2026-04-22", "tags": ["devops"] },
+  { "id": "10", "title": "Security audit",             "status": "in-progress", "priority": "high",   "assignee": "Alice", "dueDate": "2026-05-10", "tags": ["security"] },
+  { "id": "11", "title": "",                           "status": "todo",        "priority": "low",    "assignee": "Bob",   "dueDate": "2026-05-20", "tags": [] },
+  { "id": "12", "title": "Write release notes",        "status": "todo",        "priority": "low",    "assignee": "Carol", "dueDate": "2026-05-30", "tags": ["docs"] },
+  { "id": "13", "title": "Performance testing",        "status": "in-progress", "priority": "medium", "assignee": "Bob",   "dueDate": "2026-05-05", "tags": ["testing", "performance"] },
+  { "id": "14", "title": "Set up monitoring",          "status": "done",        "priority": "high",   "assignee": "Alice", "dueDate": "2026-04-05", "tags": ["devops", "infra"] },
+  { "id": "15", "title": "Fix broken link",            "status": "UNKNOWN",     "priority": "low",    "assignee": "Carol", "dueDate": "2026-04-18", "tags": ["bug"] }
+]

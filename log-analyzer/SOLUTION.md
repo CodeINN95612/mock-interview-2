@@ -11,12 +11,12 @@
 
 Per-service breakdown:
 
-| Service  | Entries | Errors | Warns | Error rate | Avg duration ms | Top error                  |
-|----------|---------|--------|-------|------------|-----------------|----------------------------|
-| database | 4       | 2      | 2     | 50.00%     | 824.00          | Connection pool exhausted  |
-| payments | 6       | 3      | 0     | 50.00%     | 2679.33         | Payment gateway timeout     |
-| auth     | 5       | 2      | 0     | 40.00%     | 106.00          | Invalid token               |
-| api      | 4       | 0      | 1     | 0.00%      | 41.50           | null                        |
+| Service  | Entries | Errors | Warns | Error rate | Avg duration ms | Top error                 |
+|----------|---------|--------|-------|------------|-----------------|---------------------------|
+| database | 4       | 2      | 2     | 50.00%     | 824.00          | Connection pool exhausted |
+| payments | 6       | 3      | 0     | 50.00%     | 2679.33         | Payment gateway timeout   |
+| auth     | 5       | 2      | 0     | 40.00%     | 106.00          | Invalid token             |
+| api      | 4       | 0      | 1     | 0.00%      | 41.50           | null                      |
 
 Sorted by errorRate desc, ties broken alphabetically: **database, payments, auth, api**.
 
@@ -71,7 +71,7 @@ Sorted by errorRate desc, ties broken alphabetically: **database, payments, auth
 ]
 ```
 
-*(Note: `Math.round(x * 100) / 100` will produce `50` not `50.00` in JSON — both are correct.)*
+*(Note: `Math.round(x * 100) / 100` produces `50` not `50.00` in JSON — both are correct.)*
 
 ---
 
@@ -82,7 +82,6 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 type LogLevel = "INFO" | "WARN" | "ERROR";
-
 const VALID_LEVELS: LogLevel[] = ["INFO", "WARN", "ERROR"];
 
 interface RawLogEntry {
@@ -104,21 +103,14 @@ interface ServiceSummary {
 }
 
 class ParseError extends Error {
-  constructor(
-    public readonly field: string,
-    public readonly value: string,
-    message: string
-  ) {
+  constructor(public readonly field: string, public readonly value: string, message: string) {
     super(message);
     this.name = "ParseError";
   }
 }
 
 class FileReadError extends Error {
-  constructor(
-    public readonly filePath: string,
-    message: string
-  ) {
+  constructor(public readonly filePath: string, message: string) {
     super(message);
     this.name = "FileReadError";
   }
@@ -133,27 +125,22 @@ class LogEntry {
 
   constructor(raw: RawLogEntry) {
     const timestamp = new Date(raw.timestamp);
-    if (isNaN(timestamp.getTime())) {
+    if (isNaN(timestamp.getTime()))
       throw new ParseError("timestamp", raw.timestamp, `Invalid timestamp: "${raw.timestamp}"`);
-    }
 
-    if (!VALID_LEVELS.includes(raw.level as LogLevel)) {
+    if (!VALID_LEVELS.includes(raw.level as LogLevel))
       throw new ParseError("level", raw.level, `Invalid level: "${raw.level}". Must be one of: ${VALID_LEVELS.join(", ")}`);
-    }
 
     const service = raw.service.trim();
-    if (service.length === 0) {
+    if (service.length === 0)
       throw new ParseError("service", raw.service, `Service name cannot be empty`);
-    }
 
     const message = raw.message.trim();
-    if (message.length === 0) {
+    if (message.length === 0)
       throw new ParseError("message", raw.message, `Message cannot be empty`);
-    }
 
-    if (raw.durationMs !== null && (typeof raw.durationMs !== "number" || raw.durationMs < 0)) {
+    if (raw.durationMs !== null && (typeof raw.durationMs !== "number" || raw.durationMs < 0))
       throw new ParseError("durationMs", String(raw.durationMs), `durationMs must be a non-negative number or null`);
-    }
 
     this.timestamp = timestamp;
     this.level = raw.level as LogLevel;
@@ -162,13 +149,8 @@ class LogEntry {
     this.durationMs = raw.durationMs;
   }
 
-  get isError(): boolean {
-    return this.level === "ERROR";
-  }
-
-  get isWarn(): boolean {
-    return this.level === "WARN";
-  }
+  get isError(): boolean { return this.level === "ERROR"; }
+  get isWarn(): boolean  { return this.level === "WARN"; }
 
   toString(): string {
     return `[${this.level}] ${this.service}: ${this.message} (${this.timestamp.toISOString()})`;
@@ -189,10 +171,7 @@ async function readLogs(filePath: string): Promise<RawLogEntry[]> {
   }
 }
 
-async function writeSummary(
-  summary: ServiceSummary[],
-  outputPath: string
-): Promise<void> {
+async function writeSummary(summary: ServiceSummary[], outputPath: string): Promise<void> {
   try {
     await writeFile(outputPath, JSON.stringify(summary, null, 2), "utf-8");
   } catch (err) {
@@ -218,49 +197,36 @@ function parseLogs(rawEntries: RawLogEntry[]): LogEntry[] {
 
 class LogAnalyzer {
   private readonly entries: LogEntry[];
-
-  constructor(entries: LogEntry[]) {
-    this.entries = entries;
-  }
+  constructor(entries: LogEntry[]) { this.entries = entries; }
 
   groupByService(): Record<string, LogEntry[]> {
     const groups: Record<string, LogEntry[]> = {};
     for (const entry of this.entries) {
-      if (!groups[entry.service]) {
-        groups[entry.service] = [];
-      }
-      groups[entry.service].push(entry);
+      (groups[entry.service] ??= []).push(entry);
     }
     return groups;
   }
 
   generateSummary(): ServiceSummary[] {
     const groups = this.groupByService();
-
     return Object.entries(groups)
       .map(([service, entries]) => {
         const errorCount = entries.filter(e => e.isError).length;
-        const warnCount = entries.filter(e => e.isWarn).length;
-        const errorRate = Math.round((errorCount / entries.length) * 100 * 100) / 100;
+        const warnCount  = entries.filter(e => e.isWarn).length;
+        const errorRate  = Math.round((errorCount / entries.length) * 100 * 100) / 100;
 
-        const durationsWithValues = entries
-          .map(e => e.durationMs)
-          .filter((d): d is number => d !== null);
-        const averageDurationMs =
-          durationsWithValues.length > 0
-            ? Math.round((durationsWithValues.reduce((a, b) => a + b, 0) / durationsWithValues.length) * 100) / 100
-            : null;
+        const durations = entries.map(e => e.durationMs).filter((d): d is number => d !== null);
+        const averageDurationMs = durations.length > 0
+          ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 100) / 100
+          : null;
 
         const errorMessages = entries.filter(e => e.isError).map(e => e.message);
         let mostCommonError: string | null = null;
         if (errorMessages.length > 0) {
           const counts: Record<string, number> = {};
-          for (const msg of errorMessages) {
-            counts[msg] = (counts[msg] ?? 0) + 1;
-          }
+          for (const msg of errorMessages) counts[msg] = (counts[msg] ?? 0) + 1;
           mostCommonError = Object.entries(counts)
-            .sort(([a, ca], [b, cb]) => cb - ca || a.localeCompare(b))
-            [0][0];
+            .sort(([a, ca], [b, cb]) => cb - ca || a.localeCompare(b))[0][0];
         }
 
         return { service, totalEntries: entries.length, errorCount, warnCount, errorRate, averageDurationMs, mostCommonError };
@@ -270,15 +236,12 @@ class LogAnalyzer {
 }
 
 async function main(): Promise<void> {
-  const logsPath = join(import.meta.dirname, "logs.json");
+  const logsPath  = join(import.meta.dirname, "logs.json");
   const outputPath = join(import.meta.dirname, "summary.json");
-
   try {
     const rawEntries = await readLogs(logsPath);
-    const entries = parseLogs(rawEntries);
-    const skipped = rawEntries.length - entries.length;
-
-    console.log(`Loaded ${entries.length} entries (${skipped} skipped).\n`);
+    const entries    = parseLogs(rawEntries);
+    console.log(`Loaded ${entries.length} entries (${rawEntries.length - entries.length} skipped).\n`);
 
     const summary = new LogAnalyzer(entries).generateSummary();
     await writeSummary(summary, outputPath);
@@ -287,12 +250,11 @@ async function main(): Promise<void> {
     console.log("Service Health Report:");
     console.log("─".repeat(76));
     for (const s of summary) {
-      const dur = s.averageDurationMs !== null ? `${Math.round(s.averageDurationMs)}ms` : "n/a";
+      const dur    = s.averageDurationMs !== null ? `${Math.round(s.averageDurationMs)}ms` : "n/a";
       const topErr = s.mostCommonError ?? "—";
       console.log(
         `${s.service.padEnd(10)}| total: ${String(s.totalEntries).padStart(2)} ` +
-        `| errors: ${String(s.errorCount).padStart(1)} ` +
-        `| rate: ${String(s.errorRate.toFixed(2)).padStart(6)}% ` +
+        `| errors: ${s.errorCount} | rate: ${s.errorRate.toFixed(2).padStart(6)}% ` +
         `| avg: ${dur.padStart(7)} | ${topErr}`
       );
     }
@@ -313,97 +275,80 @@ main();
 
 | Criterion | Points | What to look for |
 |-----------|--------|------------------|
-| `LogLevel` union type used as the field type (not just `string`) | 5 | The cast `raw.level as LogLevel` after validation is the correct pattern |
-| All parameters and return types annotated, no `any` | 5 | `(d): d is number` type predicate in filter is a green flag |
-| `readonly` on class fields | 5 | Shows immutability awareness |
-| Interfaces used correctly, not reinvented | 5 | They should not rewrite `RawLogEntry` or `ServiceSummary` as classes |
-
----
+| `LogLevel` union type used correctly; cast after validation (`raw.level as LogLevel`) | 5 | Using `string` for the field type is –3 |
+| All parameters and return types annotated, no `any` | 5 | `(d): d is number` type predicate is a strong green flag |
+| `readonly` on class fields | 5 | |
+| Interfaces used correctly, not reinvented as classes | 5 | |
 
 ### Classes — 20 pts
 
 | Criterion | Points | What to look for |
 |-----------|--------|------------------|
-| Constructor validates all five fields and throws correctly typed `ParseError` | 12 | Each field gets its own check; generic `Error` throughout is –4 |
-| `isError` / `isWarn` getters are simple comparisons | 4 | Using a method instead of a getter is acceptable but ask why |
-| `toString` includes level, service, message, and timestamp | 4 | Format doesn't need to match exactly |
-
-**Probe:** "Why getters rather than methods here?" (No arguments, reads like a property, computed from state — canonical getter use case.)
-
----
+| Constructor validates all five fields with correctly typed `ParseError` | 12 | Generic `Error` throughout is –4 |
+| `isError` / `isWarn` are getters (not methods) | 4 | Ask why regardless |
+| `toString` includes level, service, message, timestamp | 4 | |
 
 ### Async / Await — 20 pts
 
 | Criterion | Points | What to look for |
 |-----------|--------|------------------|
-| `readLogs` uses `await readFile(...)` inside an `async` function | 8 | Not `readFileSync`, not `.then()` chaining |
-| `writeSummary` uses `await writeFile(...)` | 6 | |
-| `main` is `async` and wraps everything in `try/catch` with `process.exit(1)` | 6 | |
+| `readLogs` awaits `readFile` inside `async` function | 8 | Not `readFileSync`, not `.then()` |
+| `writeSummary` awaits `writeFile` | 6 | |
+| `main` is `async` with top-level `try/catch` and `process.exit(1)` | 6 | |
 
-**Red flag:** importing from `node:fs` instead of `node:fs/promises` and mixing callbacks with async.
-
----
-
-### Error Handling — 20 pts
+### Error handling — 20 pts
 
 | Criterion | Points | What to look for |
 |-----------|--------|------------------|
-| `ParseError` carries `field` and `value` properties | 4 | They should not remove or ignore those constructor args |
-| `FileReadError` wraps both file I/O errors *and* JSON parse errors | 6 | Many candidates only handle the file-read case |
-| Bad entries are skipped with a warning; unknown errors re-thrown | 10 | The `else { throw err }` in `parseLogs` is critical — silently swallowing all errors hides real bugs |
-
----
+| `ParseError` preserves `field` and `value` properties | 4 | |
+| `FileReadError` wraps both the read failure *and* the JSON parse failure | 6 | Most candidates miss the JSON parse case |
+| Bad entries skipped with warning; unknown errors re-thrown | 10 | The `else { throw err }` branch is critical |
 
 ### Filesystem — 10 pts
 
 | Criterion | Points | What to look for |
 |-----------|--------|------------------|
-| Uses `node:fs/promises` with the `node:` prefix | 3 | Minor, shows familiarity with modern Node conventions |
-| Handles missing file gracefully via `FileReadError` (test by renaming `logs.json`) | 4 | |
-| JSON parse failure also produces a `FileReadError` (test by corrupting the JSON) | 3 | Often missed |
-
----
+| `node:fs/promises` with `node:` prefix | 3 | |
+| Missing file handled gracefully (rename `logs.json` to test) | 4 | |
+| Corrupt JSON handled gracefully (manually break `logs.json` to test) | 3 | |
 
 ### Data transformation — 10 pts
 
 | Criterion | Points | What to look for |
 |-----------|--------|------------------|
-| `groupByService` produces correct groupings | 3 | |
-| `averageDurationMs` skips nulls (not treats them as 0) | 4 | This is the most commonly missed detail |
-| `mostCommonError` tie-breaks alphabetically | 3 | A "first one wins" approach fails this; look for an explicit sort |
+| `groupByService` correct | 3 | |
+| `averageDurationMs` skips nulls rather than treating them as 0 | 4 | Most commonly missed detail |
+| `mostCommonError` tie-breaks alphabetically | 3 | "First one wins" fails this |
 
 ---
 
 ## Follow-up questions
 
 **Easy**
-- "Why do we call `super(message)` inside the custom error constructors?"
-- "What is the difference between `null` and `undefined` in TypeScript? When would you use each?"
+- "Why call `super(message)` in the custom error constructors?"
+- "What is the difference between `null` and `undefined`? When would you use each?"
 
 **Medium**
-- "Your `parseLogs` catches only `ParseError`. What happens if `new LogEntry(raw)` throws a `TypeError` instead — a bug in your constructor code?"
-- "How would you test `LogAnalyzer.generateSummary()` without touching the filesystem at all?"
-- "The `mostCommonError` logic iterates the error messages twice (once to count, once to sort). Can you do it in one pass?"
+- "`parseLogs` only catches `ParseError`. What happens if the constructor has a bug that throws a `TypeError`?"
+- "How would you test `generateSummary` without touching the filesystem?"
+- "The `mostCommonError` logic iterates error messages twice. Can you do it in one pass?"
 
 **Hard**
-- "What would need to change if `logs.json` could be several gigabytes and can't fit in memory?"
-- "How would you make `readLogs` generic so it could read any well-typed JSON file, not just log entries?"
-- "`(d): d is number` is a type predicate. What happens if you remove it and just use `d !== null`? Does TypeScript complain?"
+- "What changes if `logs.json` is several gigabytes and cannot fit in memory?"
+- "How would you make `readLogs` generic so it can read any typed JSON file?"
+- "What does the `(d): d is number` predicate actually do? What happens if you remove it?"
 
 ---
 
 ## Green flags
-
-- Reads the whole file before touching any function.
-- Spots the two malformed entries in `logs.json` before running the program.
-- Uses `instanceof ParseError` rather than checking `err.name`.
-- Writes and manually tests `readLogs` first, then builds upward.
-- Handles the JSON parse failure inside `readLogs` without being prompted.
+- Reads the whole skeleton before writing any code.
+- Spots both malformed entries in the data before running.
+- Uses `instanceof ParseError` rather than `err.name === "ParseError"`.
+- Catches JSON parse failure inside `readLogs` without being prompted.
 
 ## Red flags
-
-- Reaches for `JSON.parse` without a try/catch.
-- Uses `any` to work around type errors instead of fixing them.
-- Silently swallows all exceptions in `parseLogs`.
-- Averages `durationMs` including nulls (treating them as 0).
-- Uses `fs.readFileSync` to "keep it simple."
+- `JSON.parse` without a `try/catch`.
+- `any` to silence TypeScript errors.
+- Silently swallowing all errors in `parseLogs`.
+- Averaging `durationMs` including nulls (as 0).
+- `fs.readFileSync` to "keep it simple."

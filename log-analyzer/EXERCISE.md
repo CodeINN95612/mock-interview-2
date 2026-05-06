@@ -37,12 +37,12 @@ npm run check
 
 `logs.json` is an array of log entry objects with the following shape:
 
-| Field        | Type             | Notes                              |
-|--------------|------------------|------------------------------------|
-| `timestamp`  | string           | ISO 8601 date-time                 |
+| Field        | Type             | Notes                                    |
+|--------------|------------------|------------------------------------------|
+| `timestamp`  | string           | ISO 8601 date-time                       |
 | `level`      | string           | must be `"INFO"`, `"WARN"`, or `"ERROR"` |
-| `service`    | string           | e.g. `"auth"`, `"payments"`        |
-| `message`    | string           | human-readable log message         |
+| `service`    | string           | e.g. `"auth"`, `"payments"`              |
+| `message`    | string           | human-readable log message               |
 | `durationMs` | number \| null   | response time in ms; null for non-request logs |
 
 The file intentionally contains **two malformed entries** that must be handled
@@ -108,13 +108,13 @@ all `LogEntry` objects for that service.
 
 Call `groupByService()` and build one `ServiceSummary` per service:
 
-| Field              | Description                                                              |
-|--------------------|--------------------------------------------------------------------------|
-| `service`          | Service name                                                             |
-| `totalEntries`     | Total log entries for this service                                       |
-| `errorCount`       | Number of `ERROR`-level entries                                          |
-| `warnCount`        | Number of `WARN`-level entries                                           |
-| `errorRate`        | `(errorCount / totalEntries) * 100`, rounded to **2 decimal places**     |
+| Field              | Description                                                                    |
+|--------------------|--------------------------------------------------------------------------------|
+| `service`          | Service name                                                                   |
+| `totalEntries`     | Total log entries for this service                                             |
+| `errorCount`       | Number of `ERROR`-level entries                                                |
+| `warnCount`        | Number of `WARN`-level entries                                                 |
+| `errorRate`        | `(errorCount / totalEntries) * 100`, rounded to **2 decimal places**           |
 | `averageDurationMs`| Mean of all non-`null` `durationMs` values, rounded to **2 dp**; `null` if none exist |
 | `mostCommonError`  | Message of the most frequent `ERROR` entry; break ties alphabetically; `null` if no errors |
 

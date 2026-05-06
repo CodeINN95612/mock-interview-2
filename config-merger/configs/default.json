@@ -1,0 +1,18 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "localhost",
+    "timeout": 30
+  },
+  "database": {
+    "url": "postgres://localhost:5432/myapp",
+    "poolSize": 5
+  },
+  "logging": {
+    "level": "debug",
+    "format": "text"
+  },
+  "features": {
+    "darkMode": false
+  }
+}

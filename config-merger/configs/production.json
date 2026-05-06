@@ -1,0 +1,16 @@
+{
+  "server": {
+    "port": "443",
+    "host": "api.example.com"
+  },
+  "database": {
+    "url": "postgres://prod-db:5432/myapp",
+    "poolSize": 150
+  },
+  "logging": {
+    "level": "verbose"
+  },
+  "features": {
+    "darkMode": false
+  }
+}

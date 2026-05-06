@@ -1,0 +1,12 @@
+{
+  "fields": [
+    { "key": "server.port",       "type": "number",  "required": true,  "min": 1, "max": 65535 },
+    { "key": "server.host",       "type": "string",  "required": true  },
+    { "key": "server.timeout",    "type": "number",  "required": false, "min": 1  },
+    { "key": "database.url",      "type": "string",  "required": true  },
+    { "key": "database.poolSize", "type": "number",  "required": true,  "min": 1, "max": 100 },
+    { "key": "logging.level",     "type": "string",  "required": true,  "enum": ["debug", "info", "warn", "error"] },
+    { "key": "logging.format",    "type": "string",  "required": false, "enum": ["json", "text"] },
+    { "key": "features.darkMode", "type": "boolean", "required": false }
+  ]
+}
